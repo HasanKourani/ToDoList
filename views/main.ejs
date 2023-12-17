@@ -5,10 +5,11 @@
   <div class="list-container">
     <span class="date"><%= day %></span>
     <ul class="lists">
-      <% if(list.length===0){ %>
+      <% if(!list){ %>
 
       <p id="noAdded">No Added Tasks</p>
-      <%} else {%> <% list.forEach(function(item){{ %>
+      <%} else {%>
+         <% list.items.forEach(function(item){{ %>
 
       <li class="listTasks">
         <input type="checkbox" class="checkbox" id="check<%=item._id%>"/>
@@ -50,15 +51,20 @@
   </form>
 
   <div>
-    <a href="/">Main</a>
-  <% if(lists.length===0){ %>
-    <p>No Custom Lists!</p>
-    <% } else { %>
+      <a href="/main">Main</a>
+      <% if(lists && lists.length === 0){ %>
+        <p>No Custom Lists!</p>
+       <% } else if(lists && lists.length) { %>
       <% lists.forEach(function(listName){ %>
         <a href="/<%= listName.name %>"><%= listName.name %></a>
         <% });} %>
-      </div>
+  </div>
+
 </div>
+
+<form action="/logout" method="POST">
+  <button type="submit">Log Out</button>
+</form>
 
 <script>
   function handler(id) {
