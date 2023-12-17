@@ -1,0 +1,74 @@
+<%- include("partials/header.ejs") %>
+
+<div class="container">
+  <h1><%= listTitle + " List" %></h1>
+  <div class="list-container">
+    <span class="date"><%= day %></span>
+    <ul class="lists">
+      <% if(list.length===0){ %>
+
+      <p id="noAdded">No Added Tasks</p>
+      <%} else {%> <% list.forEach(function(item){{ %>
+
+      <li class="listTasks">
+        <input type="checkbox" class="checkbox" id="check<%=item._id%>"/>
+        <p class="strikethrough" id="name<%=item._id%>"><%= item.name %></p>
+
+        <form action="/deleteTask" method="post" class="dlt-form">
+          <input type="hidden" name="task" value="<%= item._id %>" />
+          <input type="submit" name="delete" class="delete-btn" value="&#10005;" id="delete<%=item._id%>"/>
+          <input type="hidden" name="listName" value="<%= listTitle %>"/>
+        </form>
+
+        <form action="/editTask" method="post" class="edit-task">
+          <input type="hidden" name="listName" value="<%= listTitle %>"/>
+          <input type="hidden" name="task" value="<%= item._id %>" />
+          <input id="input<%=item._id%>" type="text" name="editedTask" value="<%= item.name %>" 
+          autocomplete="off" autofocus="true" hidden="true"/>
+          <button id="done<%=item._id%>" class="edit-btn" type="submit" hidden>D</button>
+        </form>
+        <button id="edit<%=item._id%>" onclick="handler('<%=item._id%>')">E</button>
+
+        <% }}); %> <% } %> 
+      </li>
+    </ul>
+
+    <form action="/addTask" method="POST" id="add-form" autocomplete="off">
+      <input
+        type="text"
+        name="task"
+        id="task"
+        placeholder="Add New Task"
+        required 
+        autofocus/>
+        <button type="submit" name="list" id="addButton" value="<%= listTitle %>">+</button>
+    </form>
+  </div>
+
+  <form action="/createNewList" method="POST">
+    <button type="submit" name="createNewListBtn">Create New List</button>
+  </form>
+
+  <div>
+    <a href="/">Main</a>
+  <% if(lists.length===0){ %>
+    <p>No Custom Lists!</p>
+    <% } else { %>
+      <% lists.forEach(function(listName){ %>
+        <a href="/<%= listName.name %>"><%= listName.name %></a>
+        <% });} %>
+      </div>
+</div>
+
+<script>
+  function handler(id) {
+    document.getElementById("name" + id).style.display = "none";
+    document.getElementById("edit" + id).setAttribute("hidden", true)
+    document.getElementById("delete" + id).setAttribute("hidden", true)
+    document.getElementById("check" + id).setAttribute("hidden", true)
+    document.getElementById("done" + id).removeAttribute("hidden")
+    document.getElementById("input" + id).removeAttribute("hidden")
+  }
+</script>
+
+<%- include("partials/footer.ejs") %>

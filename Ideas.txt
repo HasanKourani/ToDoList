@@ -1,0 +1,7 @@
+Time Range for each Tasks.
+Reminder before the tasks.
+If the set time for the task is past, send a notification asking if they want to set it for another time.
+Save the tasks for each day.
+Premium features: ...
+
+Notes: empty array to remove default tasks and display No tasks added!
