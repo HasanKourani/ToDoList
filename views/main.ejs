@@ -1,15 +1,14 @@
 <%- include("partials/header.ejs") %>
 
 <div class="container">
-  <h1><%= listTitle + " List" %></h1>
+  <h1><%= title %> List</h1>
   <div class="list-container">
-    <span class="date"><%= day %></span>
+    <span class="date"><%= today %></span>
     <ul class="lists">
-      <% if(!list){ %>
+      <% if(tasks.length===0){ %>
 
       <p id="noAdded">No Added Tasks</p>
-      <%} else {%>
-         <% list.items.forEach(function(item){{ %>
+      <%} else {%> <% tasks.forEach(function(item){{ %>
 
       <li class="listTasks">
         <input type="checkbox" class="checkbox" id="check<%=item._id%>"/>
@@ -18,11 +17,11 @@
         <form action="/deleteTask" method="post" class="dlt-form">
           <input type="hidden" name="task" value="<%= item._id %>" />
           <input type="submit" name="delete" class="delete-btn" value="&#10005;" id="delete<%=item._id%>"/>
-          <input type="hidden" name="listName" value="<%= listTitle %>"/>
+          <input type="hidden" name="listName" value="<%= title %>"/>
         </form>
 
         <form action="/editTask" method="post" class="edit-task">
-          <input type="hidden" name="listName" value="<%= listTitle %>"/>
+          <input type="hidden" name="listName" value="<%= title %>"/>
           <input type="hidden" name="task" value="<%= item._id %>" />
           <input id="input<%=item._id%>" type="text" name="editedTask" value="<%= item.name %>" 
           autocomplete="off" autofocus="true" hidden="true"/>
@@ -42,24 +41,29 @@
         placeholder="Add New Task"
         required 
         autofocus/>
-        <button type="submit" name="list" id="addButton" value="<%= listTitle %>">+</button>
+        <button type="submit" name="list" id="addButton" value="<%= title %>">+</button>
     </form>
   </div>
 
-  <form action="/createNewList" method="POST">
+  <form action="/createNewList" method="POST" class="createNewList">
     <button type="submit" name="createNewListBtn">Create New List</button>
   </form>
 
-  <div>
-      <a href="/main">Main</a>
-      <% if(lists && lists.length === 0){ %>
+  
+    <div class="listss">
+      <% if(lists.length===0){ %>
         <p>No Custom Lists!</p>
-       <% } else if(lists && lists.length) { %>
-      <% lists.forEach(function(listName){ %>
-        <a href="/<%= listName.name %>"><%= listName.name %></a>
+       <% } else { %>
+        <% lists.forEach(function(listName){ %>
+          <form action="/deleteNewList" method="POST">
+           <a href="/<%= listName.name %>"><%= listName.name %></a>
+           <input type="hidden" name="listId" value="<%= listName._id %>" />
+           <input type="hidden" name="listName" value="<%= listName.name %>"/>
+           <input type="submit" name="delete" class="delete-btn" value="&#10005;" id="delete<%=listName._id%>"/>
+          </form>
         <% });} %>
-  </div>
-
+    </div>
+  
 </div>
 
 <form action="/logout" method="POST">

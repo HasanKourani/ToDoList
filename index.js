@@ -25,29 +25,31 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-mongoose.connect("mongodb://0.0.0.0:27017/toDoListDB");
+mongoose.connect(process.env.DB_URI); 
 
 const tasksSchema = new mongoose.Schema({
   name: String,
-  user: {type: mongoose.Schema.Types.ObjectId, ref:"User"}
 });
 
 const Task = mongoose.model("Task", tasksSchema);
 
 const listSchema = new mongoose.Schema({
   name: String,
-  items: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task'}],
-  user: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
+  items: [tasksSchema],
+  user: [{type: mongoose.Schema.Types.ObjectId, ref:"User"}]
 });
 
 const List = mongoose.model("List", listSchema);
 
 const usersSchema = new mongoose.Schema({
-  email: String,
-  password: String,
-  googleId: String,
-  lists: [{type: mongoose.Schema.Types.ObjectId, ref: "List"}],
-  tasks: [{type: mongoose.Schema.Types.ObjectId, ref: "Task"}]
+  email:{
+    type: String
+  },
+  password:{
+    type: String,
+    min: 6,
+  },
+  googleId: String
 });
 
 usersSchema.plugin(passportLocalMongoose);
@@ -73,12 +75,18 @@ passport.deserializeUser(function(user, cb) {
   });
 });
 
-const defTask = new Task({
-  name: "Welcome to your List",
-});
-  
-const defaultTasks = [defTask];
-
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: process.env.GOOGLE_CALLBACK_URL,
+  userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
+},
+function(accessToken, refreshToken, profile, cb) {
+  User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    return cb(err, user);
+  });
+}
+));
 
 const weekday = [
   "Sunday",
@@ -113,261 +121,229 @@ const day =
   ", " +
   new Date().getFullYear();
 
-  const listTitle = "Main";
-
 
 app.get("/", (req, res)=>{
   res.render("home");
-});  
+});
 
-app.get("/register", (req, res)=>{
+app.get("/auth/google",
+  passport.authenticate("google", { scope: ["profile"] })
+);
+
+app.get("/auth/google/todolist", 
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  function(req, res) {
+    res.redirect("/main");
+  });
+
+app.get("/register", (req, res) => {
   res.render("register");
 });
 
-app.post("/register", (req, res)=>{
-  User.register({username: req.body.username}, req.body.password, function(err, user) {
-    if (err) { 
+app.post("/register", (req,res) => {
+  User.register({username: req.body.username}, req.body.password, function(err, user){
+    if(err) {
       console.log(err);
-      res.redirect("/register");
-     } else {
-      const newList = new List({
-        name: "Main",
-        items: defaultTasks,
-        user: user._id
-      });
-      const newTask = new Task({
-        name: "Welcome to your List",
-        user: user._id
-      });
-      Promise.all([newList.save(), newTask.save()]).then(()=>{
-        user.lists.push(newList);
-        user.tasks.push(newTask);
-        user.save();
-      }).then(()=>{
-        passport.authenticate("local")(req, res, function(){
-          res.redirect("/main");
-        });
-      }).catch(err => console.log(err));
-     }
-    });
-  });
-
-app.get("/login", (req, res)=>{
-  res.render("login");
-});
-
-app.post("/login", (req, res)=>{
-  const user = new User({
-    username: req.body.username,
-    password: req.body.password
-  });
-
-  req.login(user, function(err){
-    if(err){
-      console.log(err);
+      res.redirect("/register.ejs");
     } else {
-      passport.authenticate("local", { failureRedirect: '/login', failureMessage: true })(req, res, function(){
+      passport.authenticate("local")(req, res, function(){
         res.redirect("/main");
       });
     }
   });
 });
 
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
+app.post("/login", passport.authenticate("local", {
+  successRedirect: "/main",
+  failureRedirect: "/login"
+}));
+
 app.get("/main", async (req, res) => {
-
-  if(req.isAuthenticated()){
-    try{
-      const user = req.user;
-      console.log('User:', user); 
-      const foundUser = await User.populate(user, {path: "lists tasks"});
-      console.log('Found User:', foundUser);
-
-       res.render("main.ejs", {
-          list: foundUser.tasks,
-          day: day,
-          listTitle: listTitle,
-          lists: foundUser.lists
-       });
-     } catch (error){
-     console.error("Error:", error);
-    }
+  if(!req.isAuthenticated()){
+    res.redirect("/login");
   } else {
-    res.redirect("/login"); 
-  }
+  try {
+    const listTitle = "Main";
+    const user = req.user;
+    const lists = await List.find({user: user.id});
+    let allTasks = [];
+    for (const list of lists){
+      allTasks = allTasks.concat(list.items);
+    }
+    res.render("main", {
+     tasks: allTasks,
+      lists: lists,
+      today: day,
+      title: listTitle
+    });
+  } catch (err){
+  console.log(err);
+  } }
 });
 
 app.post("/addTask", async (req, res) => {
-  const taskName = req.body.task;
-  const listName = req.body.list;
-
   if(!req.isAuthenticated()){
     res.redirect("/login");
-  }
-
+  } else {
+  const taskName = req.body.task;
+  const listName = req.body.list;
   const user = req.user;
-
   try{
-    const userList = await List.findOne({name: listName, user: user._id});
-
-    if(!userList){
+    const task = new Task({ 
+      name: taskName
+    });
+    if(listName == "Main") {
+      const mainList = await List.findOneAndUpdate({user: user.id, name:"Main"}, {$push: {items: task}}, { upsert: true, new: true });
       res.redirect("/main");
     } else {
-
-    const task = new Task({
-      name: taskName,
-      user: user._id
-    });
-
-    await task.save();
-
-    userList.items.push(task);
-    await userList.save();
-  }
-  } catch (error) {
-    console.log("Error: ", error);
-    res.redirect("/main");
-  }
+      const customList = await List.findOneAndUpdate({user: user.id, name: listName}, {$push: {items: task}}, { upsert: true, new: true});
+      res.redirect("/" + listName);
+    }
+  } catch (err){
+    console.log(err); 
+  } }
 });
 
 app.post("/editTask", async (req,res)=>{
+  if(!req.isAuthenticated()){
+    res.redirect("/login");
+  }
   const editTaskId = req.body.task;
   const editedTask = req.body.editedTask;
   const listName = req.body.listName;
-
-  if(!req.isAuthenticated()){
-    res.redirect("login");
-  }
-
   const user = req.user;
-
   try{
-    let updateQuery;
     if(listName === "Main"){
-      updateQuery = {_id: editTaskId, user: user._id}
-    } else {
-      updateQuery = {_id: editTaskId, user: user._id, "items._id": editTaskId}
-    }
-
-    const updatedTask = await Task.findOneAndUpdate(updateQuery, {name: editedTask}, {new: true});
-
-    if(!updatedTask){
-      res.redirect("/main");
-    }
-
-    if (listName === "Main") {
+      await List.findOneAndUpdate(
+        {user: user.id, name:"Main", "items._id": editTaskId}, 
+        {$set: {"items.$.name": editedTask}});
       res.redirect("/main");
     } else {
-      res.redirect("/" + listName);
+      List.findOneAndUpdate(
+        {user: user.id ,name: listName, "items._id":editTaskId}, 
+        {$set: {"items.$.name": editedTask}});
+      res.redirect("/"+listName);
     }
-    } catch (error) {
-    console.error("Error:", error);
-    res.redirect("/main");
+  } catch (err) {
+    console.log(err);
   }
 });
 
-app.post("/deleteTask", (req, res) => {
+app.post("/deleteTask", async (req, res) => {
+  if(!req.isAuthenticated()){
+    res.redirect("/login");
+  }
   const deletedTaskId = req.body.task;
   const listName = req.body.listName;
-
-  if(!req.isAuthenticated()){
-    res.redirect("login");
-  }
-
   const user = req.user;
-
   try{
-    let deleteQuery;
-    if (listName === "Main"){
-      deleteQuery = {id: deletedTaskId, user: user._id}
-    } else {
-      deleteQuery = {id: deletedTaskId, user: user._id, "items._id": deletedTaskId}
-    }
-
-    const deletedTask = Task.findOneAndDelete(deleteQuery);
-
-    if(!deletedTask){
-      res.redirect("/main");
-    }
-    if (listName === "Main") {
+    if(listName === "Main"){
+      await List.findOneAndUpdate(
+        {user: user.id, name: "Main", "items._id":deletedTaskId},
+        {$pull: {items: {_id: deletedTaskId}}});
       res.redirect("/main");
     } else {
-      res.redirect("/" + listName);
+      await List.findOneAndUpdate(
+        {user: user.id, name: listName, "items._id":deletedTaskId},
+        {$pull: {items: {_id: deletedTaskId}}});
+      res.redirect("/"+listName);
     }
-    } catch (error) {
-    console.error("Error:", error);
-    res.redirect("/main");
+  } catch (err) {
+    console.log(err);
   }
 });
 
 app.get("/:customListName", async (req,res)=>{
-  const customListName = _.capitalize(req.params.customListName);
-
-  if (!req.isAuthenticated()) {
+  if(!req.isAuthenticated()){
     res.redirect("/login");
-  }
-
+  } else {
+  const customListName = _.capitalize(req.params.customListName);
   const user = req.user;
-
-  try {
-    const foundList = await List.findOne({name: customListName, user: user._id});
-
-    if (!foundList){
-      res.redirect("/" + customListName);
+  try{
+    const [foundList, foundLists] = await Promise.all([
+      List.findOne({name: customListName, user: user.id}),
+      List.find({user: user.id})
+    ]);
+    if(!foundList){
+      const list = new List({
+        name: customListName,
+        user: user.id
+      });
+      list.save();
+      res.redirect("/"+customListName);
     } else {
-
-    res.render("main.ejs",
-    {
-      listTitle: foundList.name,
-      list: foundList.items,
-      day: day,
-      lists: user.lists
-    });
+      res.render("main.ejs", {
+        title: foundList.name, 
+        tasks: foundList.items,
+        today: day,
+        lists: foundLists
+      });
     }
-  } catch (error) {
-    console.log(error);
-    res.redirect("/main");
-  }
-}); 
+  } catch(error){
+    console.error("Error: ", error);
+  }}
+});
 
 app.post("/newList", async(req,res)=>{
-  const newListName = _.capitalize(req.body.newListName);
-
   if(!req.isAuthenticated()){
-    res.redirect("login");
+    res.redirect("/login");
   }
-
-  const user = req.user;
-
-  try{
-    const existingList = await List.findOne({name: newListName, user: user._id});
-
-    if(existingList){
-      res.redirect("/main")
+  const newListName = _.capitalize(req.body.newListName);
+  try { 
+    const user = req.user;
+    const [foundList, foundLists] = await Promise.all([
+      List.findOne({ user: user.id, name: newListName }),
+      List.find({ user: user.id }),
+    ]);
+    const deftasks = [];
+    if(!foundList){
+      const list = new List({
+        name: newListName,
+        user: user.id
+      });
+      await list.save();
+      res.render("main",{
+        title: newListName,
+        tasks: deftasks,
+        today: day,
+        lists: foundLists
+      });
     } else {
-
-    const newList = new List({
-      name: newListName,
-      items: defaultTasks,
-      user: user._id
-    });
-
-    await newList.save();
-
-    user.lists.push(newList);
-    await user.save();
-
-    res.redirect("/"+newListName);
-  }
-
-  } catch (error) {
-    console.error("Error:", error);
-    res.redirect("/main");
+      res.render("main.ejs", {
+        title: foundList.name, 
+        tasks: foundList.items,
+        today: day,
+        lists: foundLists
+      });
+    }
+  } catch(error) {
+    console.error("Error: ", error);
   }
 });
 
 app.post("/createNewList", (req, res) => {
-  res.render("newList",{
+  res.render("newList.ejs",{
   });
+});
+
+app.post("/deleteNewList", async (req, res) => {
+  if(!req.isAuthenticated()){
+    res.redirect("/login");
+  }
+  const listDeleteId = req.body.listId;
+  const user = req.user;
+  const listName = req.body.listName;
+  try{
+      const foundList = await List.findOneAndDelete(
+        {user: user.id, name: listName, _id: listDeleteId});  
+      res.redirect("/main");
+    } catch (err) {
+    console.log(err);
+  }
 });
 
 app.post("/logout", (req,res)=>{
