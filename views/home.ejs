@@ -1,8 +1,20 @@
 <%- include("partials/header.ejs") %>
 
-  <a href="/register" role="button">Sign Up</a>  
+
+<div class="home">
+    <div class="headersHome">
+        <h1>Welcome to your To-Do List</h1>
+        <h2>What do we have for today?</h2>
+    </div>
+    
+    <div class="buttonsHome">
+        <a href="/register" role="button" class="registerHome">Sign Up</a>  
+  
+        <a href="/login" role="button" class="loginHome">Log in</a>
+    </div>
 
 
-  <a href="/login" role="button">Login</a>
+  
+    <%- include("partials/footer.ejs") %>
+</div>
 
-<%- include("partials/footer.ejs") %>

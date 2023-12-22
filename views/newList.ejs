@@ -1,13 +1,14 @@
 <%- include("partials/header.ejs") %>
 
-<div>
+<div class="newListContainer">
+
+  <h1 class="newListHeaders">Create New List</h1>
 
   <form action="/newList" method="POST" id="newList" class="createList" autocomplete="off">
-    <label for="newListName">New List:</label>
-    <input type="text" name="newListName" id="newListName" placeholder="Create new list" required>
-    <button type="submit" name="newListBtn" >Create List</button>
+    <input type="text" name="newListName" id="newListName" placeholder="New List Name" class="newListInputs" autofocus="true" required>
+    <button type="submit" name="newListBtn" class="newListBtn">Create List</button>
   </form>
 
-</div>
+  <%- include("partials/footer.ejs") %>
 
-<%- include("partials/footer.ejs") %>
+</div>

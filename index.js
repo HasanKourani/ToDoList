@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require("express");
 const bodyParser = require("body-parser");
+const dirname = require("path");
 const mongoose = require("mongoose");
 const _ = require("lodash");
 const session = require("express-session");
@@ -12,7 +13,7 @@ const findOrCreate = require("mongoose-findorcreate");
 const app = express();
 const port = 3000;
 
-app.use(express.static("public"));
+app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 
@@ -89,27 +90,27 @@ function(accessToken, refreshToken, profile, cb) {
 ));
 
 const weekday = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
+  "Sun",
+  "Mon",
+  "Tues",
+  "Wed",
+  "Thur",
+  "Fri",
+  "Sat",
 ];
 const months = [
-  "January",
-  "February",
-  "March",
-  "April",
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
   "May",
   "June",
   "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "Aug",
+  "Sept",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 const d = new Date();
 const day =
@@ -175,7 +176,7 @@ app.get("/main", async (req, res) => {
       allTasks = allTasks.concat(list.items);
     }
     res.render("main", {
-     tasks: allTasks,
+      tasks: allTasks,
       lists: lists,
       today: day,
       title: listTitle
@@ -190,22 +191,26 @@ app.post("/addTask", async (req, res) => {
     res.redirect("/login");
   } else {
   const taskName = req.body.task;
-  const listName = req.body.list;
+  const listName = req.body.listName;
   const user = req.user;
   try{
     const task = new Task({ 
       name: taskName
     });
-    if(listName == "Main") {
-      const mainList = await List.findOneAndUpdate({user: user.id, name:"Main"}, {$push: {items: task}}, { upsert: true, new: true });
+    if(listName === "Main") {
+      await List.findOneAndUpdate(
+        {user: user.id, name: listName},
+        {$push: {items: task}});
       res.redirect("/main");
     } else {
-      const customList = await List.findOneAndUpdate({user: user.id, name: listName}, {$push: {items: task}}, { upsert: true, new: true});
+      await List.findOneAndUpdate(
+        {user: user.id, name: listName},
+        {$push: {items: task}});
       res.redirect("/" + listName);
     }
-  } catch (err){
+  } catch (err) {
     console.log(err); 
-  } }
+  }}
 });
 
 app.post("/editTask", async (req,res)=>{
@@ -223,7 +228,7 @@ app.post("/editTask", async (req,res)=>{
         {$set: {"items.$.name": editedTask}});
       res.redirect("/main");
     } else {
-      List.findOneAndUpdate(
+      await List.findOneAndUpdate(
         {user: user.id ,name: listName, "items._id":editTaskId}, 
         {$set: {"items.$.name": editedTask}});
       res.redirect("/"+listName);

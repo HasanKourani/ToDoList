@@ -1,12 +1,24 @@
 <%- include("partials/header.ejs") %>
 
-<form action="/register" method="POST">
-  <input type="text" name="fullname" id="fullname" placeholder="Fullname" required="true">
-  <input type="text" name="username" id="username" placeholder="Email" required="true">
-  <input type="password" name="password" id="password" placeholder="password" required="true">
-  <button type="submit">Sign Up</button>
-</form>
+<div class="register">
 
-<a href="/auth/google">Sign Up With Google</a>
+  <h1 class="headerRegister">Sign Up</h1>
 
-<%- include("partials/footer.ejs") %>
+  <div class="registerFormContainer">
+
+    <form action="/register" method="POST" class="registerForm">
+     <input type="text" name="username" id="username" placeholder="Email (Required)" required="true" autofocus="true" autocomplete="off" class="registerInputs">
+     <input type="password" name="password" id="password" placeholder="Password (Required)" required="true" class="registerInputs">
+     <button type="submit" class="signUpBtn">Sign Up</button>
+   </form>
+
+   <a href="/login" class="alrLogged">Already have an account? Log In</a>
+
+   <button type="button" class="login-with-google-btn" >
+     <a href="/auth/google" class="googleBtn">Sign Up With Google</a>
+   </button>
+  </div>
+
+  <%- include("partials/footer.ejs") %>
+
+</div>
