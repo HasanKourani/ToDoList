@@ -7,8 +7,12 @@
   <div class="registerFormContainer">
 
     <form action="/register" method="POST" class="registerForm">
-     <input type="text" name="username" id="username" placeholder="Email (Required)" required="true" autofocus="true" autocomplete="off" class="registerInputs">
+     <input type="text" name="username" id="username" placeholder="Email (Required)" required="true" autofocus="true" class="registerInputs">
      <input type="password" name="password" id="password" placeholder="Password (Required)" required="true" class="registerInputs">
+     <i class="fa fa-eye" onclick="showPass()"></i>
+     <% if (errorMessage) { %>
+      <p class="errorMessage"><%= errorMessage %></p>
+     <% } %>
      <button type="submit" class="signUpBtn">Sign Up</button>
    </form>
 
@@ -18,6 +22,17 @@
      <a href="/auth/google" class="googleBtn">Sign Up With Google</a>
    </button>
   </div>
+
+  <script>
+    function showPass(){
+      var pass = document.getElementById("password");
+      if(pass.type === "password") {
+        pass.type = "text";
+      } else {
+        pass.type = "password";
+      }
+    }
+  </script>
 
   <%- include("partials/footer.ejs") %>
 

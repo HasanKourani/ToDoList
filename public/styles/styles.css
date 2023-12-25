@@ -11,18 +11,6 @@ body{
   --main-lightBlue: #98DFD6;
   }
 
-  @keyframes gradient-animation {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-
 .home{
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url("/images/homePgBg.png");
@@ -43,7 +31,7 @@ body{
   font-size: 1.1rem;
   text-transform: uppercase;
   font-weight: bold;
-  width: 200px;
+  width: 13vw;
   text-align: center;
   box-shadow: 1px 1px 4px var(--main-lightBlue);
   transition: 0.5s;
@@ -58,7 +46,7 @@ body{
   font-size: 1.1rem;
   text-transform: uppercase;
   font-weight: bold;
-  width: 200px;
+  width: 13vw;
   text-align: center;
   box-shadow: 1px 1px 4px var(--main-lightBlue);
   transition: 0.5s;
@@ -69,7 +57,7 @@ body{
     color: var(--main-blue);
 }
 
-.loginHome:hover, .logout:hover{
+.loginHome:hover{
   background-color: var(--main-blue);
   color: white;
 }
@@ -108,10 +96,11 @@ body{
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  position: relative;
 }
 
 .registerInputs, .newListInputs{
-  width: 400px;
+  width: 26vw;
   padding: 16px;
   border: none;
   outline: none;
@@ -132,6 +121,19 @@ body{
   font-size: 1.1em;
 }
 
+.fa-eye{
+  position: absolute;
+  top: 5.85vw;
+  right: 1.56vw;
+  color: var(--main-lightBlue);
+  cursor: pointer;
+}
+
+.errorMessage{
+  color: var(--main-red);
+  max-width: 26vw;
+}
+
 .signUpBtn, .newListBtn{
   text-decoration: none;
   color: var(--main-lightBlue);
@@ -142,14 +144,14 @@ body{
   font-size: 1.1rem;
   text-transform: uppercase;
   font-weight: bold;
-  width: 200px;
+  width: 13vw;
   text-align: center;
   box-shadow: 1px 1px 4px var(--main-lightBlue);
   transition: 0.5s;
   cursor: pointer;
 }
 
-.signUpBtn:hover, .newListBtn:hover, .createNewListBtn:hover{
+.signUpBtn:hover, .newListBtn:hover{
     background-color: var(--main-lightBlue);
     color: var(--main-blue);
 }
@@ -176,7 +178,11 @@ body{
   background-repeat: no-repeat;
   background-position: 12px 11px;
   cursor: pointer;
-  width: 200px;
+  width: 13vw;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
   
   &:hover {
     box-shadow: 0 -1px 0 rgba(0, 0, 0, .04), 0 2px 4px rgba(0, 0, 0, .25);
@@ -247,10 +253,6 @@ body{
 .mainContainer{
   background: linear-gradient(180deg, var(--main-beige), var(--main-lightBlue));
   min-height: 100vh;
-  background-size: cover;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }
 
 .mainHeader{
@@ -279,10 +281,18 @@ body{
   font-size: 0.8em;
   text-transform: uppercase;
   font-weight: bold;
-  width: 160px;
+  width: 10.5vw;
   box-shadow: 1px 1px 4px var(--main-lightBlue);
   transition: 0.5s;
   cursor: pointer;
+}
+
+.createNewListBtn:hover{
+  background-color: var(--main-lightBlue);
+  color: var(--main-blue);
+  font-size: 1em;
+  padding: 16px;
+  width: 11.7vw;
 }
 
 .logout{
@@ -294,21 +304,28 @@ body{
   font-size: 0.8em;
   text-transform: uppercase;
   font-weight: bold;
-  width: 100px;
+  width: 6.5vw;
   box-shadow: 1px 1px 4px var(--main-lightBlue);
   transition: 0.5s;
   cursor: pointer;
 }
 
+.logout:hover{
+  background-color: var(--main-blue);
+  color: var(--main-lightBlue);
+  font-size: 1em;
+  padding: 16px;
+  width: 7.8vw;
+}
+
 .tasksContainer{
-  align-self: center;
   display: flex;
   flex-direction: column;
-  height: 50vh;
+  height: 76vh;
   justify-content: space-between;
   align-items: center;
   background: #00235B95;
-  width: 35vw;
+  width: 50vw;
   margin-top: 12px;
   padding: 20px;
   border-radius: 20px;
@@ -317,6 +334,7 @@ body{
 .noAdded{
   font-size: 1.5rem;
   color: var(--main-blue);
+  text-align: center;
 }
 
 .noLists{
@@ -328,12 +346,23 @@ body{
   display: flex;
   flex-direction: column;
   padding: 4px;
-  height: 36vh;
+  height: 64vh;
+  width: 51vw;
   overflow-y: scroll;
 }
 
-.tasks::-webkit-scrollbar{
-  display: none;
+.tasks::-webkit-scrollbar {
+  width: 0.52vw;
+}
+
+.tasks::-webkit-scrollbar-thumb {
+  background-color: var(--main-blue);
+  border-radius: 6px;
+}
+
+.tasks::-webkit-scrollbar-track {
+  background-color: #00235B95;
+  border-radius: 6px;
 }
 
 .listTasks{
@@ -342,7 +371,8 @@ body{
   list-style-type: none;
   justify-content: space-between;
   align-items: center;
-  width: 35vw;
+  width: 50vw;
+  font-size: 1.3em;
   border-bottom: 2px solid var(--main-blue);
   color: var(--main-blue);
 }
@@ -351,6 +381,7 @@ input[type="checkbox"] {
   width: 1.3em;
   height: 1.3rem;
   accent-color: var(--main-red);
+  cursor: pointer;
 }
 
 input[type="checkbox"]:checked + p.strikethrough {
@@ -374,7 +405,7 @@ input[type="checkbox"]:checked + p.strikethrough {
   padding: 12px;
   outline: none;
   color: var(--main-blue);
-  width: 30vw;
+  width: 44vw;
   font-family: 'Poppins', sans-serif;
   font-size: 1em;
 }
@@ -393,6 +424,11 @@ input[type="checkbox"]:checked + p.strikethrough {
   color: var(--main-red);
   font-size: 1.5rem;
   cursor: pointer;
+  transition: 0.3s;
+}
+
+.deleteBtn:hover{
+  font-size: xx-large;
 }
 
 .editBtn{
@@ -402,6 +438,11 @@ input[type="checkbox"]:checked + p.strikethrough {
   font-size: 1.5rem;
   cursor: pointer;
   transform: scaleX(-1);
+  transition: 0.3s;
+}
+
+.editBtn:hover{
+  font-size: xx-large;
 }
 
 .editDoneBtn{
@@ -410,6 +451,11 @@ input[type="checkbox"]:checked + p.strikethrough {
   color: var(--main-blue);
   font-size: 1.5rem;
   cursor: pointer;
+  transition: 0.3s;
+}
+
+.editDoneBtn:hover{
+  font-size: xx-large;
 }
 
 .taskCheckbox{
@@ -433,7 +479,7 @@ input[type="checkbox"]:checked + p.strikethrough {
   outline: none;
   border: 2px dashed var(--main-blue);
   padding: 16px;
-  width: 300px;
+  width: 25vw;
   font-size: 1.3em;
   color: var(--main-blue);
   border-radius: 10px;
@@ -449,41 +495,82 @@ input[type="checkbox"]:checked + p.strikethrough {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 60px;
-  width: 60px;
+  height: 8.6vh;
+  width: 3.9vw;
   padding: 16px;
   background: none;
   border: 2px dashed var(--main-blue);
   font-size: 3em;
   color: var(--main-blue);
   cursor: pointer;
-  border-radius: 40px;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.addTaskBtn:hover{
+  font-size: 3.5em;
+  color: var(--main-lightBlue);
+  background-color: var(--main-blue);
 }
 
 .customListsContainer{
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 20px;
-  border-top: 2px solid var(--main-blue);
-  border-bottom: 2px solid var(--main-blue);
-  padding: 4px;
-  min-height: 50px;
+  width: 30vw;
+  border: 2px solid var(--main-blue);
+  border-radius: 10px;
+  padding: 20px;
+  min-height: 60vh;
+  max-height: 60vh;
+  overflow-y: scroll;
+}
+
+.customListsContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.customListsContainer::-webkit-scrollbar-thumb {
+  background-color: var(--main-blue);
+  border-radius: 6px;
+}
+
+.customListsContainer::-webkit-scrollbar-track {
+  background-color: #00235B95;
+  border-radius: 6px;
+}
+
+.yrLists{
+  text-align: center;
+  color: var(--main-blue);
 }
 
 .customListsForm{
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   gap: 10px;
-  background-color: var(--main-blue);
   padding: 12px;
-  border-radius: 8px;
+  border-bottom: 2px dashed var(--main-blue);
 }
 
 .customLists{
   text-decoration: none;
+  color: var(--main-lightBlue);
+  background-color: var(--main-blue);
+  padding: 8px;
+  border-radius: 10px;
+  transition: 0.4s;
+}
+
+.customLists:hover{
+  background-color: var(--main-lightBlue);
+  color: var(--main-blue);
+  font-size: larger;
+}
+
+.copyright{
   color: var(--main-lightBlue);
 }
 
@@ -491,4 +578,15 @@ input[type="checkbox"]:checked + p.strikethrough {
   text-align: center;
   background: linear-gradient(0deg, var(--main-beige), var(--main-lightBlue));
   padding: 10px;
+}
+
+.footerCont p{
+  color: var(--main-blue);
+}
+
+.midContainer{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
 }

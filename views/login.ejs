@@ -8,7 +8,11 @@
 
     <form action="/login" method="POST" class="registerForm">
      <input type="text" name="username" id="username" placeholder="Email (Required)" required="true" autofocus="true" class="registerInputs">
-     <input type="password" name="password" id="password" placeholder="Password (Required)" required="true" class="registerInputs">
+     <input type="password" name="password" id="password" placeholder="Password (Required)" required="true" class="registerInputs" autocomplete="off">
+     <i class="fa fa-eye" onclick="showPass()"></i>
+     <% if (errorMessage1) { %>
+      <p class="errorMessage"><%= errorMessage1 %></p>
+     <% } %>
      <button type="submit" class="signUpBtn">Log in</button>
    </form>
 
@@ -19,6 +23,17 @@
     </button>
 
   </div>
+
+  <script>
+    function showPass(){
+      var pass = document.getElementById("password");
+      if(pass.type === "password") {
+        pass.type = "text";
+      } else {
+        pass.type = "password";
+      }
+    }
+  </script>
 
   <%- include("partials/footer.ejs") %>
 

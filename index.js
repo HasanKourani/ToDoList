@@ -138,14 +138,15 @@ app.get("/auth/google/todolist",
   });
 
 app.get("/register", (req, res) => {
-  res.render("register");
+  const errorMessage = req.query.error;
+  res.render("register", {errorMessage});
 });
 
 app.post("/register", (req,res) => {
   User.register({username: req.body.username}, req.body.password, function(err, user){
     if(err) {
-      console.log(err);
-      res.redirect("/register.ejs");
+      const errorMessage = "User with this email is already registered! Please Log in!";
+      res.redirect("/register?error=" + encodeURIComponent(errorMessage));
     } else {
       passport.authenticate("local")(req, res, function(){
         res.redirect("/main");
@@ -155,33 +156,42 @@ app.post("/register", (req,res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.render("login");
+  const errorMessage1 = req.query.error;
+  res.render("login", {errorMessage1});
 });
 
 app.post("/login", passport.authenticate("local", {
   successRedirect: "/main",
-  failureRedirect: "/login"
+  failureRedirect: "/login?error=Please check if your email and password are correct! Or you signed up with this email before!"
 }));
 
 app.get("/main", async (req, res) => {
   if(!req.isAuthenticated()){
     res.redirect("/login");
   } else {
-  try {
-    const listTitle = "Main";
-    const user = req.user;
-    const lists = await List.find({user: user.id});
-    let allTasks = [];
-    for (const list of lists){
-      allTasks = allTasks.concat(list.items);
-    }
-    res.render("main", {
-      tasks: allTasks,
-      lists: lists,
-      today: day,
-      title: listTitle
-    });
-  } catch (err){
+    try{
+      const user = req.user;
+      const [foundList, foundLists] = await Promise.all([
+        List.findOne({name: "Main", user: user.id}),
+        List.find({user: user.id})
+      ]);
+      if(!foundList){
+        const mainList = new List({
+          name: "Main",
+          items: [],
+          user: user.id
+        });
+        mainList.save();
+        res.redirect("/main");
+      } else {
+        res.render("main", {
+          title: foundList.name, 
+          tasks: foundList.items,
+          today: day,
+          lists: foundLists
+        });
+      }
+    } catch (err){
   console.log(err);
   } }
 });
@@ -216,26 +226,26 @@ app.post("/addTask", async (req, res) => {
 app.post("/editTask", async (req,res)=>{
   if(!req.isAuthenticated()){
     res.redirect("/login");
-  }
-  const editTaskId = req.body.task;
+  } else {
+  const editTaskId = req.body.taskId;
   const editedTask = req.body.editedTask;
   const listName = req.body.listName;
   const user = req.user;
   try{
-    if(listName === "Main"){
-      await List.findOneAndUpdate(
-        {user: user.id, name:"Main", "items._id": editTaskId}, 
-        {$set: {"items.$.name": editedTask}});
+    let query = { user: user.id, name: listName, "items._id": editTaskId };
+    const result = await List.findOneAndUpdate(
+      query,
+      { $set: { "items.$[elem].name": editedTask } },
+      { arrayFilters: [{"elem._id": editTaskId}], new: true }
+    );
+    if (listName === "Main") {
       res.redirect("/main");
     } else {
-      await List.findOneAndUpdate(
-        {user: user.id ,name: listName, "items._id":editTaskId}, 
-        {$set: {"items.$.name": editedTask}});
-      res.redirect("/"+listName);
+      res.redirect("/" + listName);
     }
   } catch (err) {
     console.log(err);
-  }
+  } }
 });
 
 app.post("/deleteTask", async (req, res) => {
@@ -281,7 +291,7 @@ app.get("/:customListName", async (req,res)=>{
       list.save();
       res.redirect("/"+customListName);
     } else {
-      res.render("main.ejs", {
+      res.render("main", {
         title: foundList.name, 
         tasks: foundList.items,
         today: day,
@@ -296,7 +306,7 @@ app.get("/:customListName", async (req,res)=>{
 app.post("/newList", async(req,res)=>{
   if(!req.isAuthenticated()){
     res.redirect("/login");
-  }
+  } else {
   const newListName = _.capitalize(req.body.newListName);
   try { 
     const user = req.user;
@@ -318,7 +328,7 @@ app.post("/newList", async(req,res)=>{
         lists: foundLists
       });
     } else {
-      res.render("main.ejs", {
+      res.render("main", {
         title: foundList.name, 
         tasks: foundList.items,
         today: day,
@@ -327,7 +337,7 @@ app.post("/newList", async(req,res)=>{
     }
   } catch(error) {
     console.error("Error: ", error);
-  }
+  } }
 });
 
 app.post("/createNewList", (req, res) => {
@@ -338,7 +348,7 @@ app.post("/createNewList", (req, res) => {
 app.post("/deleteNewList", async (req, res) => {
   if(!req.isAuthenticated()){
     res.redirect("/login");
-  }
+  } else {
   const listDeleteId = req.body.listId;
   const user = req.user;
   const listName = req.body.listName;
@@ -348,6 +358,7 @@ app.post("/deleteNewList", async (req, res) => {
       res.redirect("/main");
     } catch (err) {
     console.log(err);
+  }
   }
 });
 
