@@ -9,7 +9,7 @@
     <form action="/login" method="POST" class="registerForm">
      <input type="text" name="username" id="username" placeholder="Email (Required)" required="true" autofocus="true" class="registerInputs">
      <input type="password" name="password" id="password" placeholder="Password (Required)" required="true" class="registerInputs" autocomplete="off">
-     <i class="fa fa-eye" onclick="showPass()"></i>
+     <div class="showPass"><span class="showPassBtn" onclick="showPass()">Show Password </span></div>
      <% if (errorMessage1) { %>
       <p class="errorMessage"><%= errorMessage1 %></p>
      <% } %>

@@ -1,18 +1,8 @@
 <%- include("partials/header.ejs") %>
 
 <div class="mainContainer">
-  <div class="mainHeader">
+    <h1 class="listTitle"><%= title %> List</h1>
     <h2 class="date"><span class="date"><%= today %></span></h2>
-    <h1><%= title %> List</h1>
-    <div class="mainHeaderBtns">
-      <form action="/createNewList" method="POST" class="createNewList">
-        <button type="submit" name="createNewListBtn" class="createNewListBtn">Create New List</button>
-      </form>
-      <form action="/logout" method="POST" class="logoutForm">
-        <button type="submit" class="logout">Log Out</button>
-      </form>
-    </div>
-  </div>
 
   <div class="midContainer">
     <div class="tasksContainer">
@@ -63,14 +53,19 @@
         </div>
       <% } else { %>
         <div class="customListsContainer">
-          <% lists.forEach(function(listName){ %>
-              <form action="/deleteNewList" method="POST" class="customListsForm">
-                  <a href="/<%= listName.name %>" class="customLists"><%= listName.name %></a>
-                  <input type="hidden" name="listId" value="<%= listName._id %>" />
-                  <input type="hidden" name="listName" value="<%= listName.name %>"/>
-                  <input type="submit" name="delete" class="deleteBtn" value="&#10006;" id="delete<%=listName._id%>"/>
-              </form>
-          <% });} %>
+          <div class="listsBtns">
+            <% lists.forEach(function(listName){ %>
+                <form action="/deleteNewList" method="POST" class="customListsForm">
+                    <a href="/<%= listName.name %>" class="customLists"><%= listName.name %></a>
+                    <input type="hidden" name="listId" value="<%= listName._id %>" />
+                    <input type="hidden" name="listName" value="<%= listName.name %>"/>
+                    <input type="submit" name="delete" class="deleteBtn" value="&#10006;" id="delete<%=listName._id%>"/>
+                </form>
+            <% });} %>
+          </div>
+          <form action="/createNewList" method="POST" class="createNewList">
+            <button type="submit" name="createNewListBtn" class="createNewListBtn">Create New List</button>
+          </form>
         </div>
     </div>
   </div>
@@ -84,6 +79,9 @@
       document.getElementById("input" + id).removeAttribute("hidden");
     }
   </script>
+<form action="/logout" method="POST" class="logoutForm">
+  <button type="submit" class="logout">Log Out</button>
+</form>
 </div>
   <div class="footerCont">
     <%- include("partials/footer.ejs") %>

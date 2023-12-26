@@ -96,7 +96,6 @@ body{
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  position: relative;
 }
 
 .registerInputs, .newListInputs{
@@ -121,12 +120,22 @@ body{
   font-size: 1.1em;
 }
 
-.fa-eye{
-  position: absolute;
-  top: 5.85vw;
-  right: 1.56vw;
+.showPass{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.showPassBtn{
+  background-color: var(--main-blue);
   color: var(--main-lightBlue);
+  padding: 8px;
+  border-radius: 4px;
   cursor: pointer;
+}
+
+.showPassBtn:hover{
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, .04), 0 2px 4px rgba(0, 0, 0, .25);
 }
 
 .errorMessage{
@@ -255,21 +264,21 @@ body{
   min-height: 100vh;
 }
 
-.mainHeader{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-  border-bottom: 1px solid var(--main-blue);
+.listTitle{
+  margin: 0;
+  padding-top: 40px;
+  text-align: center;
+  color: var(--main-blue);
+  font-size: 3.5em;
+}
+
+h2.date{
+  text-align: center;
   color: var(--main-blue);
 }
 
-.mainHeaderBtns{
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+.createNewList{
+  text-align: center;
 }
 
 .createNewListBtn{
@@ -295,9 +304,14 @@ body{
   width: 11.7vw;
 }
 
+.logoutForm{
+  text-align: center;
+  margin-top: 40px;
+}
+
 .logout{
-  background-color: var(--main-lightBlue);
-  color: var(--main-blue);
+  background-color: var(--main-blue);
+  color: var(--main-lightBlue);
   padding: 12px;
   border-radius: 40px;
   border: none;
@@ -311,11 +325,8 @@ body{
 }
 
 .logout:hover{
-  background-color: var(--main-blue);
-  color: var(--main-lightBlue);
-  font-size: 1em;
-  padding: 16px;
-  width: 7.8vw;
+  background-color: var(--main-beige);
+  color: var(--main-blue);
 }
 
 .tasksContainer{
@@ -516,26 +527,32 @@ input[type="checkbox"]:checked + p.strikethrough {
 .customListsContainer{
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  justify-content: space-between;
   width: 30vw;
   border: 2px solid var(--main-blue);
   border-radius: 10px;
   padding: 20px;
-  min-height: 60vh;
-  max-height: 60vh;
+  min-height: 64vh;
+}
+
+.listsBtns{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 50vh;
   overflow-y: scroll;
 }
 
-.customListsContainer::-webkit-scrollbar {
+.listsBtns::-webkit-scrollbar {
   width: 8px;
 }
 
-.customListsContainer::-webkit-scrollbar-thumb {
+.listsBtns::-webkit-scrollbar-thumb {
   background-color: var(--main-blue);
   border-radius: 6px;
 }
 
-.customListsContainer::-webkit-scrollbar-track {
+.listsBtns::-webkit-scrollbar-track {
   background-color: #00235B95;
   border-radius: 6px;
 }
@@ -589,4 +606,154 @@ input[type="checkbox"]:checked + p.strikethrough {
   justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
+}
+
+@media (min-width: 320px) and (max-width: 768px){
+  .home{
+    background: none;
+    background-color: var(--main-lightBlue);
+}
+
+  .registerHome{
+    font-size: 1.5em;
+    width: 30vw;
+    box-shadow: 1px 1px 4px var(--main-blue);
+  }
+
+  .loginHome{
+    font-size: 1.5em;
+    width: 30vw;
+    box-shadow: 1px 1px 4px var(--main-blue);
+  }
+
+  .registerHome:active{
+      background-color: white;
+      color: var(--main-blue);
+  }
+
+  .loginHome:active{
+    background-color: var(--main-blue);
+    color: white;
+  }
+
+  .headersHome{
+    text-align: center;
+    color: var(--main-blue);
+    font-size: 1.4em;
+  }
+
+  .copyright{
+    color: var(--main-blue);
+  }
+
+  .register{
+    background: none;
+    background-color: var(--main-lightBlue);
+  }
+
+  .headerRegister{
+    color: var(--main-blue);
+  }
+
+  .registerFormContainer{
+    background-color: #00235B80;
+    width: 64vw;
+    position: relative;
+  }
+
+  .registerInputs{
+    width: 68vw;
+  }
+
+  .fa-eye{
+    position: absolute;
+    top: 34%;
+    right: 10%;
+    transform: translate(0, -31%);
+  }
+
+  .signUpBtn{
+    width: 48%;
+  }
+
+  .alrLogged{
+    text-align: center;
+  }
+
+  .login-with-google-btn{
+    width: 80%;
+  }
+
+  .errorMessage{
+    max-width: 60vw;
+    text-align: center;
+  }
+
+  .newListContainer{
+    background: none;
+    background-color: var(--main-lightBlue);
+  }
+
+  .newListHeaders{
+    color: var(--main-blue);
+    text-align: center;
+  }
+
+  .newListInputs{
+    width: 50vw;
+  }
+
+  .newListBtn{
+    width: 50vw;
+  }
+
+  .newListBtn:active{
+    background-color: white;
+    color: var(--main-blue);
+  }
+
+  .midContainer{
+    flex-direction: column;
+  }
+
+  .tasksContainer{
+    width: 80vw;
+    height: 44vh;
+  }
+
+  .customListsContainer{
+    width: 80vw;
+    height: 44vh;
+    min-height: 50vh;
+  }
+
+  .tasks{
+    width: 76vw;
+  }
+
+  .listTasks{
+    width: 75vw;
+  }
+
+  .editInput, .addTaskInput{
+    width: 50vw;
+  }
+
+  .createNewListBtn{
+    width: 44vw;
+  }
+
+  .logout{
+    width: 28vw;
+  }
+
+  .addTaskBtn{
+    width: 1.95vw;
+    height: 4.3vh;
+    font-size: 2em;
+  }
+}
+
+@media (min-width: 769px) and (max-width:1024px){
+
 }

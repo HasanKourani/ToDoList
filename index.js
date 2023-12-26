@@ -90,27 +90,27 @@ function(accessToken, refreshToken, profile, cb) {
 ));
 
 const weekday = [
-  "Sun",
-  "Mon",
-  "Tues",
-  "Wed",
-  "Thur",
-  "Fri",
-  "Sat",
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
 ];
 const months = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
+  "January",
+  "February",
+  "March",
+  "April",
   "May",
   "June",
   "July",
-  "Aug",
-  "Sept",
-  "Oct",
-  "Nov",
-  "Dec",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 const d = new Date();
 const day =
