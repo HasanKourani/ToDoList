@@ -548,7 +548,7 @@ input[type="checkbox"]:checked + p.strikethrough {
 }
 
 .listsBtns::-webkit-scrollbar {
-  width: 8px;
+  width: 0.52vw;
 }
 
 .listsBtns::-webkit-scrollbar-thumb {
