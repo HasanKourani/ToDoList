@@ -84,7 +84,7 @@ body{
   background: linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),
   url("/images/registerBg.png");
   background-size: cover;
-  height: 100vh;
+  height: 115vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -132,15 +132,19 @@ body{
   padding: 8px;
   border-radius: 4px;
   cursor: pointer;
+  transition: 0.4s;
 }
 
 .showPassBtn:hover{
   box-shadow: 0 -1px 0 rgba(0, 0, 0, .04), 0 2px 4px rgba(0, 0, 0, .25);
+  color: var(--main-blue);
+  background-color: var(--main-lightBlue);
 }
 
 .errorMessage{
   color: var(--main-red);
   max-width: 26vw;
+  text-align: center;
 }
 
 .signUpBtn, .newListBtn{
@@ -187,7 +191,7 @@ body{
   background-repeat: no-repeat;
   background-position: 12px 11px;
   cursor: pointer;
-  width: 13vw;
+  min-width: 13vw;
 
   display: flex;
   justify-content: center;
@@ -609,10 +613,11 @@ input[type="checkbox"]:checked + p.strikethrough {
 }
 
 @media (min-width: 320px) and (max-width: 768px){
+
   .home{
     background: none;
     background-color: var(--main-lightBlue);
-}
+  }
 
   .registerHome{
     font-size: 1.5em;
@@ -649,6 +654,7 @@ input[type="checkbox"]:checked + p.strikethrough {
   .register{
     background: none;
     background-color: var(--main-lightBlue);
+    min-height: 120vh
   }
 
   .headerRegister{
@@ -665,27 +671,21 @@ input[type="checkbox"]:checked + p.strikethrough {
     width: 68vw;
   }
 
-  .fa-eye{
-    position: absolute;
-    top: 34%;
-    right: 10%;
-    transform: translate(0, -31%);
-  }
-
   .signUpBtn{
     width: 48%;
   }
 
   .alrLogged{
     text-align: center;
+    width: fit-content;  
   }
 
   .login-with-google-btn{
-    width: 80%;
+    min-width: 13vw;
   }
 
   .errorMessage{
-    max-width: 60vw;
+    max-width: fit-content;
     text-align: center;
   }
 
@@ -725,6 +725,10 @@ input[type="checkbox"]:checked + p.strikethrough {
     width: 80vw;
     height: 44vh;
     min-height: 50vh;
+  }
+
+  .listsBtns{
+    max-height: 40vh;
   }
 
   .tasks{
