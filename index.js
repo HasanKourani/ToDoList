@@ -11,7 +11,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require("mongoose-findorcreate");
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({ extended: true }));
