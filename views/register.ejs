@@ -6,14 +6,14 @@
 
   <div class="registerFormContainer">
 
-    <form action="/register" method="POST" class="registerForm">
+    <form action="/register" method="POST" class="registerForm" onsubmit="return validate()">
      <input type="text" name="username" id="username" placeholder="Email (Required)" required="true" autofocus="true" class="registerInputs">
      <input type="password" name="password" id="password" placeholder="Password (Required)" required="true" class="registerInputs">
      <div class="showPass"><span class="showPassBtn" onclick="showPass()">Show Password </span></div>
      <% if (errorMessage) { %>
       <p class="errorMessage"><%= errorMessage %></p>
      <% } %>
-     <button type="submit" class="signUpBtn">Sign Up</button>
+     <button type="submit" class="signUpBtn" onclick="validate()">Sign Up</button>
    </form>
 
    <a href="/login" class="alrLogged">Already have an account? Log In</a>
@@ -32,6 +32,18 @@
         pass.type = "password";
       }
     }
+
+    function validate(){
+
+    var mail = document.getElementById("username").value;
+
+    var regx = /^([a-zA-Z0-9\._]+)@([a-zA-Z0-9])+.([a-z]+)(.[a-z]+)?$/
+
+    if(!regx.test(mail)) {
+      alert("Invalid email");
+      return false;
+    }
+  }
   </script>
 
   <%- include("partials/footer.ejs") %>

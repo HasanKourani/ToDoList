@@ -4,10 +4,23 @@
 
   <h1 class="newListHeaders">Create New List</h1>
 
-  <form action="/newList" method="POST" id="newList" class="createList" autocomplete="off">
+  <form action="/newList" method="POST" id="newList" class="createList" autocomplete="off" onsubmit="return validate()">
     <input type="text" name="newListName" id="newListName" placeholder="New List Name" class="newListInputs" autofocus="true" required>
-    <button type="submit" name="newListBtn" class="newListBtn">Create List</button>
+    <button type="submit" name="newListBtn" class="newListBtn" onclick="validate()">Create List</button>
   </form>
+
+  <script>
+    function validate(){
+      var list = document.getElementById("newListName").value;
+
+      var regx = /^([a-zA-Z0-9` `]+)$/;
+
+      if(!regx.test(list)) {
+        alert("Invalid list name");
+        return false;
+      }
+    }
+  </script>
 
   <%- include("partials/footer.ejs") %>
 
